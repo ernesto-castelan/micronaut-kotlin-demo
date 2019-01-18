@@ -11,16 +11,18 @@ import kotlin.annotation.AnnotationRetention.RUNTIME
 import kotlin.annotation.AnnotationTarget.*
 import kotlin.reflect.KClass
 
+@Target(FUNCTION, FIELD, ANNOTATION_CLASS, CONSTRUCTOR, VALUE_PARAMETER)
+@Retention(RUNTIME)
+@MustBeDocumented
+
 @ConstraintComposition(OR)
 @Null
 @NotBlank
 @ReportAsSingleViolation
 @Constraint(validatedBy = [])
 
-@Target(FUNCTION, FIELD, ANNOTATION_CLASS, CONSTRUCTOR, VALUE_PARAMETER)
-@Retention(RUNTIME)
 annotation class NullNotBlank (
-    val message: String = "{org.hibernate.validator.constraints.NullOrNotBlank.message}",
+    val message: String = "{demo.mn.validation.annotations.NullOrNotBlank.message}",
     val groups: Array<KClass<*>> = [],
     val payload: Array<KClass<out Payload>> = []
 )

@@ -19,4 +19,8 @@ class FullPersonCommand {
     @NotNull
     @Valid
     var address: AddressCommand? = null
+
+    @NotNull
+    @Valid
+    var amount: AmountCommand? = null
 }
