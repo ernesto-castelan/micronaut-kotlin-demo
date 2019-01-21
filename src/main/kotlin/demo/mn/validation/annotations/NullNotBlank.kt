@@ -11,7 +11,7 @@ import kotlin.annotation.AnnotationRetention.RUNTIME
 import kotlin.annotation.AnnotationTarget.*
 import kotlin.reflect.KClass
 
-@Target(FUNCTION, FIELD, ANNOTATION_CLASS, CONSTRUCTOR, VALUE_PARAMETER)
+@Target(FUNCTION, FIELD, PROPERTY_GETTER, ANNOTATION_CLASS, CONSTRUCTOR, VALUE_PARAMETER)
 @Retention(RUNTIME)
 @MustBeDocumented
 

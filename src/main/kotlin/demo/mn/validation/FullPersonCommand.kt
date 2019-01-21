@@ -6,21 +6,21 @@ import javax.validation.constraints.NotBlank
 import javax.validation.constraints.NotNull
 import javax.validation.constraints.Size
 
-class FullPersonCommand {
+data class FullPersonCommand (
 
-    @NotBlank
-    @Size(max = 255)
-    var firstName: String? = null
+    @get:NotBlank
+    @get:Size(max = 255)
+    var firstName: String? = null,
 
-    @NullNotBlank
-    @Size(max = 255)
-    var lastName: String? = null
+    @get:NullNotBlank
+    @get:Size(max = 255)
+    var lastName: String? = null,
 
-    @NotNull
-    @Valid
-    var address: AddressCommand? = null
+    @get:NotNull
+    @get:Valid
+    var address: AddressCommand? = null,
 
-    @NotNull
-    @Valid
+    @get:NotNull
+    @get:Valid
     var amount: AmountCommand? = null
-}
+)

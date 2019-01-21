@@ -16,9 +16,7 @@ object FullPersonCommandSpec:Spek({
                   "a".repeat(256)   to 1,
                   "hello"           to 0)
             .forEach { firstName, expectedErrorCount ->
-                val command = FullPersonCommand()
-                command.firstName = firstName
-
+                val command = FullPersonCommand(firstName = firstName)
                 it("validation of firstName '$firstName' returns $expectedErrorCount errors") {
                     val errorCount = validator.validateProperty(command, "firstName").size
                     assertEquals(expectedErrorCount, errorCount)
@@ -33,9 +31,7 @@ object FullPersonCommandSpec:Spek({
                   "a".repeat(256)   to 1,
                   "hello"           to 0)
             .forEach { lastName, expectedErrorCount ->
-                val command = FullPersonCommand()
-                command.lastName = lastName
-
+                val command = FullPersonCommand(lastName = lastName)
                 it("validation of lastName '$lastName' returns $expectedErrorCount errors") {
                     val errorCount = validator.validateProperty(command, "lastName").size
                     assertEquals(expectedErrorCount, errorCount)
@@ -51,12 +47,11 @@ object FullPersonCommandSpec:Spek({
                                  interiorNumber = "B",
                                  postalCode = "12345")      to 0)
             .forEach { address, expectedErrorCount ->
-                val command = FullPersonCommand()
-                command.firstName = "First"
-                command.lastName = "Last"
-                command.address = address
-                command.amount = AmountCommand(min = 5,
-                                               max = 10)
+                val command = FullPersonCommand(firstName = "First",
+                                                lastName = "Last",
+                                                address = address,
+                                                amount = AmountCommand(min = 5,
+                                                                       max = 10))
 
                 it("validation of address '$address' returns $expectedErrorCount errors") {
                     val errorCount = validator.validate(command).size
@@ -71,14 +66,13 @@ object FullPersonCommandSpec:Spek({
                   AmountCommand(min = 5,
                                 max = 10)   to 0)
             .forEach { amount, expectedErrorCount ->
-                val command = FullPersonCommand()
-                command.firstName = "First"
-                command.lastName = "Last"
-                command.address = AddressCommand(street = "Test",
-                                                 exteriorNumber = "123",
-                                                 interiorNumber = "B",
-                                                 postalCode = "12345")
-                command.amount = amount
+                val command = FullPersonCommand(firstName = "First",
+                                                lastName = "Last",
+                                                address = AddressCommand(street = "Test",
+                                                                         exteriorNumber = "123",
+                                                                         interiorNumber = "B",
+                                                                         postalCode = "12345"),
+                                                amount = amount)
 
                 it("validation of amount '$amount' returns $expectedErrorCount errors") {
                     val errorCount = validator.validate(command).size

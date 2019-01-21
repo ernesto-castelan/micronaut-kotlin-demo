@@ -5,26 +5,21 @@ import javax.validation.constraints.NotBlank
 import javax.validation.constraints.Pattern
 import javax.validation.constraints.Size
 
-class AddressCommand (
-    street: String? = null,
-    exteriorNumber: String? = null,
-    interiorNumber: String? = null,
-    postalCode: String? = null
-) {
-    @NotBlank
-    @Size(max = 255)
-    var street: String? = street
+data class AddressCommand (
+    @get:NotBlank
+    @get:Size(max = 255)
+    var street: String? = null,
 
-    @NotBlank
-    @Size(max = 255)
-    var exteriorNumber: String? = exteriorNumber
+    @get:NotBlank
+    @get:Size(max = 255)
+    var exteriorNumber: String? = null,
 
-    @NullNotBlank
-    @Size(max = 255)
-    var interiorNumber: String? = interiorNumber
+    @get:NullNotBlank
+    @get:Size(max = 255)
+    var interiorNumber: String? = null,
 
-    @NotBlank
-    @Size(min = 5, max = 5)
-    @Pattern(regexp = "[0-9]*")
-    var postalCode: String? = postalCode
-}
+    @get:NotBlank
+    @get:Size(min = 5, max = 5)
+    @get:Pattern(regexp = "[0-9]*")
+    var postalCode: String? = null
+)
