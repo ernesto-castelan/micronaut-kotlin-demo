@@ -1,61 +1,61 @@
 package demo.mn.validation
 
-import org.spekframework.spek2.Spek
-import org.spekframework.spek2.style.specification.describe
+import io.kotlintest.data.forall
+import io.kotlintest.shouldBe
+import io.kotlintest.specs.StringSpec
+import io.kotlintest.tables.row
 import javax.validation.Validation
-import kotlin.test.assertEquals
+import javax.validation.Validator
 
-object SimplePersonCommandSpec: Spek({
-    describe("Get hibernate validator") {
-        val validator = Validation.buildDefaultValidatorFactory().validator
+class SimplePersonCommandSpec : StringSpec() {
 
-        describe("Validate name"){
-            mapOf(null              to 1,
-                  ""                to 1,
-                  " "               to 1,
-                  "a".repeat(256)   to 1,
-                  "hello"           to 0)
-            .forEach { name, expectedErrorCount ->
+    val validator: Validator = Validation.buildDefaultValidatorFactory().validator
+
+    init {
+        "Validation for name is correct" {
+            forall(
+                row(null,               1),
+                row("",                 1),
+                row(" ",                1),
+                row("a".repeat(256),    1),
+                row("hello",            0)
+            ) { name, expectedErrorCount ->
                 val command = SimplePersonCommand(name = name)
-                it("validation of name '$name' returns $expectedErrorCount errors") {
-                    val errorCount = validator.validateProperty(command, "name").size
-                    assertEquals(expectedErrorCount, errorCount)
-                }
+                val errorCount = validator.validateProperty(command, "name").size
+                errorCount shouldBe expectedErrorCount
             }
         }
 
-        describe("Validate email"){
-            mapOf(null              to 1,
-                  ""                to 1,
-                  " "               to 2,
-                  "a".repeat(256)   to 2,
-                  "hello"           to 1,
-                  "abc@xyz.com"     to 0)
-            .forEach { email, expectedErrorCount ->
+        "Validation for email is correct" {
+            forall(
+                row(null,               1),
+                row("",                 1),
+                row(" ",                2),
+                row("a".repeat(256),    2),
+                row("hello",            1),
+                row("abc@xyz.com",      0)
+            ) { email, expectedErrorCount ->
                 val command = SimplePersonCommand(email = email)
-                it("validation of email '$email' returns $expectedErrorCount errors") {
-                    val errorCount = validator.validateProperty(command, "email").size
-                    assertEquals(expectedErrorCount, errorCount)
-                }
+                val errorCount = validator.validateProperty(command, "email").size
+                errorCount shouldBe expectedErrorCount
             }
         }
 
-        describe("Validate phone"){
-            mapOf(null              to 0,
-                  ""                to 1,
-                  " "               to 2,
-                  "a"               to 2,
-                  "a".repeat(10)    to 1,
-                  "5".repeat(9)     to 1,
-                  "5".repeat(11)    to 1,
-                  "5".repeat(10)    to 0)
-            .forEach { phone, expectedErrorCount ->
+        "Validation for phone is correct" {
+            forall(
+                row(null,               0),
+                row("",                 1),
+                row(" ",                2),
+                row("a",                2),
+                row("a".repeat(10),     1),
+                row("5".repeat(9),      1),
+                row("5".repeat(11),     1),
+                row("5".repeat(10),     0)
+            ) { phone, expectedErrorCount ->
                 val command = SimplePersonCommand(phone = phone)
-                it("validation of phone '$phone' returns $expectedErrorCount errors") {
-                    val errorCount = validator.validateProperty(command, "phone").size
-                    assertEquals(expectedErrorCount, errorCount)
-                }
+                val errorCount = validator.validateProperty(command, "phone").size
+                errorCount shouldBe expectedErrorCount
             }
         }
     }
-})
+}

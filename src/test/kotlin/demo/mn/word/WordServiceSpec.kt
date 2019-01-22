@@ -1,42 +1,39 @@
 package demo.mn.word
 
-import org.spekframework.spek2.Spek
-import org.spekframework.spek2.style.specification.describe
-import kotlin.test.assertEquals
+import io.kotlintest.data.forall
+import io.kotlintest.shouldBe
+import io.kotlintest.specs.StringSpec
+import io.kotlintest.tables.row
 
-object WordServiceSpec: Spek({
+class WordServiceSpec : StringSpec({
 
-    describe("Test count") {
-        mapOf(""            to 0,
-              "  "          to 0,
-              "hi"          to 1,
-              "one two"     to 2,
-              "one   two"   to 2,
-              "a b c d"     to 4,
-              "a b a b"     to 4,
-              "a a a a"     to 4)
-        .forEach { text, expectedResult ->
-            it("count returns correct result for '$text'") {
-                assertEquals(expectedResult,
-                             WordService.count(text))
-            }
+    "count returns correct results" {
+        forall(
+            row("",             0),
+            row("  ",           0),
+            row("hi",           1),
+            row("one two",      2),
+            row("one   two",    2),
+            row("a b c d",      4),
+            row("a b a b",      4),
+            row("a a a a",      4)
+        ) { text, expectedResult ->
+            WordService.count(text) shouldBe expectedResult
         }
     }
 
-    describe("Test countUnique") {
-        mapOf(""            to 0,
-              "  "          to 0,
-              "hi"          to 1,
-              "one two"     to 2,
-              "one   two"   to 2,
-              "a b c d"     to 4,
-              "a b a b"     to 2,
-              "a a a a"     to 1)
-        .forEach { text, expectedResult ->
-            it("countUnique returns correct result for '$text'") {
-                assertEquals(expectedResult,
-                             WordService.countUnique(text))
-            }
+    "countUnique returns correct results" {
+        forall(
+            row("",             0),
+            row("  ",           0),
+            row("hi",           1),
+            row("one two",      2),
+            row("one   two",    2),
+            row("a b c d",      4),
+            row("a b a b",      2),
+            row("a a a a",      1)
+        ) { text, expectedResult ->
+            WordService.countUnique(text) shouldBe expectedResult
         }
     }
 })

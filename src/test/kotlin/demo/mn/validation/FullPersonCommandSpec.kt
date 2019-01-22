@@ -1,84 +1,82 @@
 package demo.mn.validation
 
-import org.spekframework.spek2.Spek
-import org.spekframework.spek2.style.specification.describe
+import io.kotlintest.data.forall
+import io.kotlintest.shouldBe
+import io.kotlintest.specs.StringSpec
+import io.kotlintest.tables.row
 import javax.validation.Validation
-import kotlin.test.assertEquals
+import javax.validation.Validator
 
-object FullPersonCommandSpec:Spek({
-    describe("Get hibernate validator") {
-        val validator = Validation.buildDefaultValidatorFactory().validator
+class FullPersonCommandSpec : StringSpec() {
 
-        describe("Validate firstName"){
-            mapOf(null              to 1,
-                  ""                to 1,
-                  " "               to 1,
-                  "a".repeat(256)   to 1,
-                  "hello"           to 0)
-            .forEach { firstName, expectedErrorCount ->
+    val validator: Validator = Validation.buildDefaultValidatorFactory().validator
+
+    init {
+        "Validation for firstName is correct" {
+            forall(
+                row(null,               1),
+                row("",                 1),
+                row(" ",                1),
+                row("a".repeat(256),    1),
+                row("hello",            0)
+            ) { firstName, expectedErrorCount ->
                 val command = FullPersonCommand(firstName = firstName)
-                it("validation of firstName '$firstName' returns $expectedErrorCount errors") {
-                    val errorCount = validator.validateProperty(command, "firstName").size
-                    assertEquals(expectedErrorCount, errorCount)
-                }
+                val errorCount = validator.validateProperty(command, "firstName").size
+                errorCount shouldBe expectedErrorCount
             }
         }
 
-        describe("Validate lastName"){
-            mapOf(null              to 0,
-                  ""                to 1,
-                  " "               to 1,
-                  "a".repeat(256)   to 1,
-                  "hello"           to 0)
-            .forEach { lastName, expectedErrorCount ->
+        "Validation for lastName is correct" {
+            forall(
+                row(null,               0),
+                row("",                 1),
+                row(" ",                1),
+                row("a".repeat(256),    1),
+                row("hello",            0)
+            ) { lastName, expectedErrorCount ->
                 val command = FullPersonCommand(lastName = lastName)
-                it("validation of lastName '$lastName' returns $expectedErrorCount errors") {
-                    val errorCount = validator.validateProperty(command, "lastName").size
-                    assertEquals(expectedErrorCount, errorCount)
-                }
+                val errorCount = validator.validateProperty(command, "lastName").size
+                errorCount shouldBe expectedErrorCount
             }
         }
 
-        describe("Validate address"){
-            mapOf(null                                      to 1,
-                  AddressCommand()                          to 3,
-                  AddressCommand(street = "Test",
-                                 exteriorNumber = "123",
-                                 interiorNumber = "B",
-                                 postalCode = "12345")      to 0)
-            .forEach { address, expectedErrorCount ->
+        "Validation for address is correct" {
+            forall(
+                row(null,                                   1),
+                row(AddressCommand(),                       3),
+                row(AddressCommand(street = "Test",
+                                   exteriorNumber = "123",
+                                   interiorNumber = "B",
+                                   postalCode = "12345"),   0)
+            ) { address, expectedErrorCount ->
+                val amount = AmountCommand(min = 5, max = 10)
                 val command = FullPersonCommand(firstName = "First",
                                                 lastName = "Last",
                                                 address = address,
-                                                amount = AmountCommand(min = 5,
-                                                                       max = 10))
-
-                it("validation of address '$address' returns $expectedErrorCount errors") {
-                    val errorCount = validator.validate(command).size
-                    assertEquals(expectedErrorCount, errorCount)
-                }
+                                                amount = amount)
+                val errorCount = validator.validate(command).size
+                errorCount shouldBe expectedErrorCount
             }
         }
 
-        describe("Validate amount"){
-            mapOf(null                      to 1,
-                  AmountCommand()           to 2,
-                  AmountCommand(min = 5,
-                                max = 10)   to 0)
-            .forEach { amount, expectedErrorCount ->
+        "Validation for amount is correct" {
+            forall(
+                row(null,                       1),
+                row(AmountCommand(),            2),
+                row(AmountCommand(min = 5,
+                                  max = 10),    0)
+            ) { amount, expectedErrorCount ->
+                val address = AddressCommand(street = "Test",
+                                             exteriorNumber = "123",
+                                             interiorNumber = "B",
+                                             postalCode = "12345")
                 val command = FullPersonCommand(firstName = "First",
                                                 lastName = "Last",
-                                                address = AddressCommand(street = "Test",
-                                                                         exteriorNumber = "123",
-                                                                         interiorNumber = "B",
-                                                                         postalCode = "12345"),
+                                                address = address,
                                                 amount = amount)
-
-                it("validation of amount '$amount' returns $expectedErrorCount errors") {
-                    val errorCount = validator.validate(command).size
-                    assertEquals(expectedErrorCount, errorCount)
-                }
+                val errorCount = validator.validate(command).size
+                errorCount shouldBe expectedErrorCount
             }
         }
     }
-})
+}

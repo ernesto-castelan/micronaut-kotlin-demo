@@ -3,7 +3,7 @@ plugins {
     id "com.github.johnrengelman.shadow" version "4.0.2"
     id "org.jetbrains.kotlin.jvm" version "1.2.61"
     id "org.jetbrains.kotlin.kapt" version "1.2.61"
-    id "org.jetbrains.kotlin.plugin.allopen" version "1.2.61"	
+    id "org.jetbrains.kotlin.plugin.allopen" version "1.2.61"
 }
 
 apply plugin:"application"
@@ -15,7 +15,6 @@ repositories {
     mavenLocal()
     mavenCentral()
     maven { url "https://jcenter.bintray.com" }
-    maven { url "https://dl.bintray.com/spekframework/spek-dev" }
 }
 
 dependencyManagement {
@@ -41,11 +40,9 @@ dependencies {
     testCompile "org.hamcrest:hamcrest-all:1.3"
     testCompile "org.junit.jupiter:junit-jupiter-api:5.1.0"
     testCompile "org.jetbrains.spek:spek-api:1.1.5"
+    testCompile "io.kotlintest:kotlintest-runner-junit5:3.1.10"
     testRuntime "org.junit.jupiter:junit-jupiter-engine:5.1.0"
     testRuntime "org.jetbrains.spek:spek-junit-platform-engine:1.1.5"
-    testImplementation "org.jetbrains.kotlin:kotlin-test:$kotlinVersion"
-    testImplementation "org.spekframework.spek2:spek-dsl-jvm:$spekVersion"
-    testRuntimeOnly "org.spekframework.spek2:spek-runner-junit5:$spekVersion"
 }
 
 shadowJar {
@@ -57,26 +54,24 @@ run.jvmArgs('-noverify', '-XX:TieredStopAtLevel=1')
 mainClassName = "demo.mn.Application"
 
 test {
-    useJUnitPlatform {
-        includeEngines 'spek2'
-    }
+    useJUnitPlatform()
 }
 
 allOpen {
-	annotation("io.micronaut.aop.Around")
+    annotation("io.micronaut.aop.Around")
 }
 
 compileKotlin {
-	kotlinOptions {
-	    jvmTarget = '1.8' 
-	    //Will retain parameter names for Java reflection
-	    javaParameters = true 
-	}
+    kotlinOptions {
+        jvmTarget = '1.8'
+        //Will retain parameter names for Java reflection
+        javaParameters = true
+    }
 }
 
 compileTestKotlin {
-	kotlinOptions {
-	    jvmTarget = '1.8' 
-	    javaParameters = true 
-	}
+    kotlinOptions {
+        jvmTarget = '1.8'
+        javaParameters = true
+    }
 }

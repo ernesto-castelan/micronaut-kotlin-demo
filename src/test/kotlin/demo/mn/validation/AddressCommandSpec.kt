@@ -1,76 +1,74 @@
 package demo.mn.validation
 
-import org.spekframework.spek2.Spek
-import org.spekframework.spek2.style.specification.describe
+import io.kotlintest.data.forall
+import io.kotlintest.shouldBe
+import io.kotlintest.specs.StringSpec
+import io.kotlintest.tables.row
 import javax.validation.Validation
-import kotlin.test.assertEquals
+import javax.validation.Validator
 
-object AddressCommandSpec: Spek({
-    describe("Get hibernate validator") {
-        val validator = Validation.buildDefaultValidatorFactory().validator
+class AddressCommandSpec : StringSpec() {
 
-        describe("Validate street"){
-            mapOf(null              to 1,
-                  ""                to 1,
-                  " "               to 1,
-                  "a".repeat(256)   to 1,
-                  "hello"           to 0)
-            .forEach { street, expectedErrorCount ->
+    val validator: Validator = Validation.buildDefaultValidatorFactory().validator
+
+    init {
+        "Validation for street is correct" {
+            forall(
+                row(null,               1),
+                row("",                 1),
+                row(" ",                1),
+                row("a".repeat(256),    1),
+                row("hello",            0)
+            ) { street, expectedErrorCount ->
                 val command = AddressCommand(street = street)
-                it("validation of street '$street' returns $expectedErrorCount errors") {
-                    val errorCount = validator.validateProperty(command, "street").size
-                    assertEquals(expectedErrorCount, errorCount)
-                }
+                val errorCount = validator.validateProperty(command, "street").size
+                errorCount shouldBe expectedErrorCount
             }
         }
 
-        describe("Validate exteriorNumber"){
-            mapOf(null              to 1,
-                  ""                to 1,
-                  " "               to 1,
-                  "a".repeat(256)   to 1,
-                  "hello"           to 0)
-            .forEach { exteriorNumber, expectedErrorCount ->
+        "Validation for exteriorNumber is correct" {
+            forall(
+                row(null,               1),
+                row("",                 1),
+                row(" ",                1),
+                row("a".repeat(256),    1),
+                row("hello",            0)
+            ) { exteriorNumber, expectedErrorCount ->
                 val command = AddressCommand(exteriorNumber = exteriorNumber)
-                it("validation of exteriorNumber '$exteriorNumber' returns $expectedErrorCount errors") {
-                    val errorCount = validator.validateProperty(command, "exteriorNumber").size
-                    assertEquals(expectedErrorCount, errorCount)
-                }
+                val errorCount = validator.validateProperty(command, "exteriorNumber").size
+                errorCount shouldBe expectedErrorCount
             }
         }
 
-        describe("Validate interiorNumber"){
-            mapOf(null              to 0,
-                  ""                to 1,
-                  " "               to 1,
-                  "a".repeat(256)   to 1,
-                  "hello"           to 0)
-            .forEach { interiorNumber, expectedErrorCount ->
+        "Validation for interiorNumber is correct" {
+            forall(
+                row(null,               0),
+                row("",                 1),
+                row(" ",                1),
+                row("a".repeat(256),    1),
+                row("hello",            0)
+            ) { interiorNumber, expectedErrorCount ->
                 val command = AddressCommand(interiorNumber = interiorNumber)
-                it("validation of interiorNumber '$interiorNumber' returns $expectedErrorCount errors") {
-                    val errorCount = validator.validateProperty(command, "interiorNumber").size
-                    assertEquals(expectedErrorCount, errorCount)
-                }
+                val errorCount = validator.validateProperty(command, "interiorNumber").size
+                errorCount shouldBe expectedErrorCount
             }
         }
 
-        describe("Validate postalCode"){
-            mapOf(null              to 1,
-                  ""                to 2,
-                  " "               to 3,
-                  " ".repeat(5)     to 2,
-                  "1".repeat(4)     to 1,
-                  "1".repeat(6)     to 1,
-                  "1".repeat(5)     to 0,
-                  "a".repeat(5)     to 1)
-            .forEach { postalCode, expectedErrorCount ->
+        "Validation for postalCode is correct" {
+            forall(
+                row(null,           1),
+                row("",             2),
+                row(" ",            3),
+                row(" ".repeat(5),  2),
+                row("1".repeat(4),  1),
+                row("1".repeat(6),  1),
+                row("1".repeat(5),  0),
+                row("a".repeat(5),  1)
+            ) { postalCode, expectedErrorCount ->
                 val command = AddressCommand(postalCode = postalCode)
-
-                it("validation of postalCode '$postalCode' returns $expectedErrorCount errors") {
-                    val errorCount = validator.validateProperty(command, "postalCode").size
-                    assertEquals(expectedErrorCount, errorCount)
-                }
+                val errorCount = validator.validateProperty(command, "postalCode").size
+                errorCount shouldBe expectedErrorCount
             }
         }
     }
-})
+}

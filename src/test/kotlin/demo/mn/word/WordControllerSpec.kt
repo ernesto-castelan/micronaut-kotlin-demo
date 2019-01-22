@@ -1,37 +1,28 @@
 package demo.mn.word
 
+import io.kotlintest.shouldBe
+import io.kotlintest.specs.StringSpec
 import io.micronaut.context.ApplicationContext
 import io.micronaut.http.HttpRequest.POST
 import io.micronaut.http.client.HttpClient
 import io.micronaut.runtime.server.EmbeddedServer
-import org.spekframework.spek2.Spek
-import org.spekframework.spek2.style.specification.describe
-import kotlin.test.assertEquals
 
-object WordControllerSpec: Spek({
-    describe("Setup HTTP server and client") {
-        val server: EmbeddedServer = ApplicationContext.run(EmbeddedServer::class.java)
-        val client: HttpClient = HttpClient.create(server.url)
+class WordControllerSpec : StringSpec() {
 
-        describe("Test word count") {
-            it("works with normal count") {
-                val response = client.toBlocking().exchange(
-                                   POST("/word/count", WordCountCommand("hello hello", false)),
-                                   Map::class.java)
-                assertEquals(2, response.body()?.get("wordCount"))
-            }
+    val server: EmbeddedServer = autoClose(ApplicationContext.run(EmbeddedServer::class.java))
+    val client: HttpClient = autoClose(HttpClient.create(server.url))
 
-            it("works with unique count") {
-                val response = client.toBlocking().exchange(
-                                   POST("/word/count", WordCountCommand("hello hello", true)),
-                                   Map::class.java)
-                assertEquals(1, response.body()?.get("wordCount"))
-            }
+    init {
+        "Normal word count is correct" {
+            val body = WordCountCommand(text = "hello hello", unique = false)
+            val response = client.toBlocking().exchange(POST("/word/count", body), Map::class.java)
+            response.body()?.get("wordCount") shouldBe 2
         }
 
-        afterGroup {
-            client.close()
-            server.close()
+        "Unique word count is correct" {
+            val body = WordCountCommand(text = "hello hello", unique = true)
+            val response = client.toBlocking().exchange(POST("/word/count", body), Map::class.java)
+            response.body()?.get("wordCount") shouldBe 1
         }
     }
-})
+}
