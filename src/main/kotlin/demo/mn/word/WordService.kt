@@ -1,6 +1,9 @@
 package demo.mn.word
 
-object WordService {
+import javax.inject.Singleton
+
+@Singleton
+class WordService {
 
     fun count(text: String): Int {
         return split(text).size
